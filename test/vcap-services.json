@@ -1,0 +1,60 @@
+{
+    "some-mysql-database-service": [
+        {
+            "instance_name": "some-mysql-database-service",
+            "tags": [
+                "mysql"
+            ],
+            "credentials": {
+                "host": "localhost",
+                "port": 3306
+            }
+        }
+    ],
+    "some-other-mysql-database-service": [
+        {
+            "instance_name": "some-other-mysql-database-service",
+            "tags": [
+                "mysql"
+            ],
+            "credentials": {
+                "host": "localhost",
+                "port": 3306
+            }
+        }
+    ],
+    "some-non-mysql-database-service": [
+        {
+            "instance_name": "some-non-mysql-database-service",
+            "tags": [
+                "xxx"
+            ],
+            "credentials": {
+                "host": "localhost",
+                "port": 3306
+            }
+        }
+    ],
+    "some-mariadb-database-service": [
+        {
+            "instance_name": "some-mariadb-database-service",
+            "tags": [
+                "mariadb"
+            ],
+            "credentials": {
+                "host": "localhost",
+                "port": 3306
+            }
+        },
+        {
+            "instance_name": "some-secondary-mariadb-database-service",
+            "tags": [
+                "mariadb"
+            ],
+            "credentials": {
+                "host": "localhost",
+                "port": 3306
+            }
+        }
+    ]
+}
