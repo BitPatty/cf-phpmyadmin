@@ -1,0 +1,88 @@
+name: Github Workflow
+
+on:
+  push:
+    branches:
+      - '*'
+      - '*/*'
+      - '**'
+    tags-ignore:
+      - '*'
+      - '*/*'
+      - '**'
+  pull_request:
+    types: [assigned, opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build image name
+        run: |
+          PHPMYADMIN_VERSION=$(cat .version)
+          echo "PHPMYADMIN_VERSION=${PHPMYADMIN_VERSION}" >> $GITHUB_ENV
+      - name: Create Build
+        run: docker build --build-arg PHPMYADMIN_VERSION=${{ env.PHPMYADMIN_VERSION }} -f ./Dockerfile .
+
+
+  publish-development-image:
+    name: Publish Development Image
+    needs: sonar-scan-push
+    if: ${{ github.ref == 'refs/heads/develop' && github.repository == 'BitPatty/cf-phpmyadmin' && !contains(github.event.head_commit.message, '[skip ci]') }}
+    environment: 'development'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get release date tag
+        run: echo "RELEASE_DATE=`date +%Y%m%d`" >> $GITHUB_ENV
+      - name: Add SHORT_SHA env property with commit short sha
+        run: echo "SHORT_SHA=`echo ${{ github.sha }} | cut -c1-8`" >> $GITHUB_ENV
+      - name: Build image name
+        run: |
+          PHPMYADMIN_VERSION=$(cat .version)
+          echo "PHPMYADMIN_VERSION=${PHPMYADMIN_VERSION}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/bitpatty/cf-phpmyadmin:${PHPMYADMIN_VERSION}-${{ env.RELEASE_DATE }}-${{ env.SHORT_SHA }}" >> $GITHUB_ENV
+      - name: Create a new build
+        run: docker build -t "${{ env.IMAGE_NAME }}" --build-arg PHPMYADMIN_VERSION=${{ env.PHPMYADMIN_VERSION }}  -f ./Dockerfile .
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push Image to registry
+        run: docker push ${{ env.IMAGE_NAME }}
+
+  publish-production-image:
+    name: Publish Production Image
+    needs: sonar-scan-push
+    if: ${{ github.ref == 'refs/heads/master' && github.repository == 'BitPatty/cf-phpmyadmin' && !contains(github.event.head_commit.message, '[skip ci]') }}
+    environment: 'production'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Get release date tag
+        run: echo "RELEASE_DATE=`date +%Y%m%d`" >> $GITHUB_ENV
+      - name: Build image name
+        run: |
+          PHPMYADMIN_VERSION=$(cat .version)
+          echo "PHPMYADMIN_VERSION=${PHPMYADMIN_VERSION}" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/bitpatty/cf-phpmyadmin:${PHPMYADMIN_VERSION}-${{ env.RELEASE_DATE }}" >> $GITHUB_ENV
+      - name: Create a new build
+        run: docker build -t "${{ env.IMAGE_NAME }}" --build-arg PHPMYADMIN_VERSION=${{ env.PHPMYADMIN_VERSION }}  -f ./Dockerfile .
+      - name: Log in to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push Image to registry
+        run: docker push ${{ env.IMAGE_NAME }}
+      - name: Push as latest
+        run: |
+          docker tag ${{ env.IMAGE_NAME }} ghcr.io/bitpatty/cf-phpmyadmin:latest
+          docker push ghcr.io/bitpatty/cf-phpmyadmin:latest
