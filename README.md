@@ -11,6 +11,8 @@ applications:
 - name: my-app
    memory: 512M
    instances: 1
+   routes:
+     - route: my-app.com
    docker:
      image: ghcr.io/bitpatty/cf-phpmyadmin:latest
    services:
