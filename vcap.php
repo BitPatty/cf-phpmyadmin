@@ -85,13 +85,13 @@ if(
 
 $env_file = fopen(".cf.env", "a");
 
-fwrite($env_file, 'export PMA_HOSTS="' . implode(',', $cf_config['hosts']) . '"');
+fwrite($env_file, "export PMA_HOSTS='" . implode(',', $cf_config['hosts']) . "'");
 fwrite($env_file, "\n");
-fwrite($env_file, 'export PMA_PORTS="' . implode(',', $cf_config['ports']) . '"');
+fwrite($env_file, "export PMA_PORTS='" . implode(',', $cf_config['ports']) . "'");
 fwrite($env_file, "\n");
-fwrite($env_file, 'export PMA_VERBOSES="' . implode(',', $cf_config['verboses']) . '"');
+fwrite($env_file, "export PMA_VERBOSES='" . implode(',', $cf_config['verboses']) . "'");
 fwrite($env_file, "\n");
-fwrite($env_file, 'export APACHE_PORT="' . $apache_port . '"');
+fwrite($env_file, "export APACHE_PORT='" . $apache_port . "'");
 fwrite($env_file, "\n");
 
 fclose($env_file);
