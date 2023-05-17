@@ -11,6 +11,8 @@ applications:
 - name: my-app
    memory: 512M
    instances: 1
+   routes:
+     - route: my-app.com
    docker:
      image: ghcr.io/bitpatty/cf-phpmyadmin:latest
    services:
@@ -26,11 +28,23 @@ The following environment variables from the [original image](https://github.com
 * ``PMA_VERBOSES`` - Automatically pouplated based on bound services
 * ``PMA_PORTS`` - Automatically pouplated based on bound services
 * ``APACHE_PORT`` -  Based on the `PORT` environment variable, with fallback to 3000
+* ``PMA_CONTROLHOST`` - Automatically pouplated if ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` is set
+* ``PMA_CONTROLPORT`` - Automatically pouplated if ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` is set 
+* ``PMA_PMADB`` - Automatically pouplated if ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` is set
+* ``PMA_CONTROLUSER`` - Automatically pouplated if ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` is set
+* ``PMA_CONTROLPASS`` - Automatically pouplated if ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` is set
 
 The following environment variables are available for configuring the setup script:
 
 * ``PMA_VCAP_DB_SERVICE_TAGS`` - A comma separated list of service tags used by MySQL services, defaults to `mysql` and `mariadb`.
 * ``PMA_VCAP_DB_SERVICE_TAGS_SEPARATOR`` - If you cannot use a comma for ``PMA_VCAP_DB_SERVICE_TAGS`` you can specify the separator in this variable.
+* ``PMA_VCAP_CONFIG_DB_SERVICE_NAME`` -  The service name that should be used for the [phpMyAdmin Configuration Storage database](https://docs.phpmyadmin.net/en/latest/setup.html#phpmyadmin-configuration-storage). If set it will override the follwing environment variables:
+  * ``PMA_CONTROLHOST``
+  * ``PMA_CONTROLPORT`` 
+  * ``PMA_PMADB``
+  * ``PMA_CONTROLUSER``
+  * ``PMA_CONTROLPASS``
+
 
 The following environment variables can be used as with the [original image](https://github.com/phpmyadmin/docker):
 

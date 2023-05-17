@@ -1,0 +1,21 @@
+version: '3.8'
+
+services: 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sleep infinity
+    network_mode: service:db
+    volumes:
+      - ..:/workspace:cached
+      - ~/.ssh:/home/node/.ssh:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+  db:
+    image: mariadb:10.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: mariadb
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: mariadb

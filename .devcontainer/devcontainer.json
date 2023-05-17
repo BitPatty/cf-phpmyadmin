@@ -1,0 +1,7 @@
+{
+	"name": "cf-phpmyadmin",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "app",
+	"workspaceFolder": "/workspace",
+	"forwardPorts": [3000, 3306]
+}

@@ -6,9 +6,15 @@ if [ "$DEBUG" = "1" ]; then
   set -x
 fi
 
-php vcap.php
-source .cf.env
-rm -f .cf.env
-rm -f vcap.php
+INIT_SCRIPT_FILE='vcap.php'
+CF_ENV_FILE='.cf.env'
+
+# Run the init scripts
+php $INIT_SCRIPT_FILE
+source $CF_ENV_FILE
+
+# Delete the init scripts
+rm -f $CF_ENV_FILE
+rm -f $INIT_SCRIPT_FILE
 
 /docker-entrypoint.sh $@
